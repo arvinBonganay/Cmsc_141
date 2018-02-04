@@ -2,12 +2,7 @@ import java.io.*;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Created by thegi on 03/02/2018.
- * create a function that will check C syntax
- * input is a file, name of file specified by user, first line should be number of testcases
- * int, char, double, float, void
- */
+
 public class mp1 {
     String askUserInput() {
         Scanner sc = new Scanner(System.in);
@@ -47,10 +42,6 @@ public class mp1 {
             } else {
                 line = br.readLine();
             }
-
-
-
-
         }
         displayArr(strArr);
     }
