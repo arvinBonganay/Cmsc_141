@@ -15,9 +15,27 @@ public class mp1 {
             BufferedReader br = new BufferedReader(fr);){
             int n = Integer.parseInt( br.readLine());
             System.out.println("This is the number of testcases:" + n);
+            String testcase = "";
+            boolean isFunc = false;
             while((line = br.readLine())!= null){
-                System.out.println(line.indexOf(";"));
-                System.out.println(line);
+                if (line.contains(";") && !isFunc){
+                    int index = 0, prev = 0;
+                    while((index = line.indexOf(";", prev)) >= 0){
+                        testcase = testcase.concat(line.substring(prev, index).trim());
+                        System.out.println(testcase);
+                        // call validate();
+                        testcase = "";
+                        prev = index + 1;
+                    }  
+                    System.out.println(index + "    " + prev);
+                          
+                } else if(line.contains("{")){
+                    testcase = testcase.concat(line);
+                    isFunc = true;
+                } 
+                else{
+                    testcase = testcase.concat(line);
+                } 
             }
             br.close();
         }catch (Exception e){
@@ -29,6 +47,7 @@ public class mp1 {
 //        String fName = askUserInput();
         String fName = "others/mpa1.in";
         readFile(fName);
-        System.out.println("wowowowo");
+        
+        
     }
 }
