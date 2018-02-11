@@ -3,6 +3,12 @@ import java.util.*;
 
 
 public class mp1 {
+    static List<String> dataTypes = new ArrayList<>(Arrays.asList("int", "float", "double", "char"));
+
+
+
+
+
     static String askUserInput() {
         System.out.print("Enter Input File:");
         Scanner sc = new Scanner(System.in);
@@ -18,24 +24,29 @@ public class mp1 {
             String testcase = "";
             boolean isFunc = false;
             while((line = br.readLine())!= null){
-                if (line.contains(";") && !isFunc){
-                    int index = 0, prev = 0;
-                    while((index = line.indexOf(";", prev)) >= 0){
-                        testcase = testcase.concat(line.substring(prev, index).trim());
-                        System.out.println(testcase);
-                        // call validate();
+                int start = 0;
+                for (int i = 0; i < line.length(); i++){
+                    char c = line.charAt(i);
+                    if(c == ';' && !isFunc){
+                        testcase += line.substring(start, i);
+                        start = i + 1;
+//                        System.out.println(testcase.trim());
+                        validate(testcase.trim());
                         testcase = "";
-                        prev = index + 1;
-                    }  
-                    System.out.println(index + "    " + prev);
-                          
-                } else if(line.contains("{")){
-                    testcase = testcase.concat(line);
-                    isFunc = true;
-                } 
-                else{
-                    testcase = testcase.concat(line);
-                } 
+                    } else if(c == '{'){
+                        isFunc = true;
+                        testcase += line.substring(start, i + 1);
+                        start = i + 1;
+                    } else if (c == '}'){
+                        isFunc = false;
+                        testcase += line.substring(start, i + 1);
+//                        System.out.println(testcase.trim());
+                        validate(testcase.trim());
+                        start = i + 1;
+                        testcase = "";
+                    }
+                }
+                testcase += line.substring(start) + " ";
             }
             br.close();
         }catch (Exception e){
@@ -43,6 +54,109 @@ public class mp1 {
             System.exit(0);
         }
     }
+
+    static void validate(String testcase){
+        if(testcase.contains("{")){
+            System.out.println("function definition");
+        } else if(testcase.contains("=")){
+//            String t = testcase.substring(0, testcase.indexOf("="));
+            String dtype1 = testcase.substring(0,testcase.indexOf(" "));
+            if (dataTypes.contains(dtype1)) {
+                String varname =  testcase.substring(testcase.indexOf(" ") + 1).trim();
+                if(varname.contains(",,")){
+                    System.out.println("INVALID VARIABLE DEFINITION");
+                    return;
+                }
+                StringTokenizer tokens = new StringTokenizer(varname, ",");
+                String name = "";
+                while(tokens.hasMoreTokens()){
+                    name = tokens.nextToken().trim();
+                    if(name.contains("=")){
+                        System.out.print(name.trim() + " has equals" + "\n");
+                    } else {
+                        if ((!isNum(name.charAt(0)) || isLetter(name.charAt(0))) || name.charAt(0) == '_') {
+                            if(name.length() != 1){
+                                if(validVarName(name)){
+                                    System.out.print(name + " VALID VARNAME DECLARATION \n");
+                                } else {
+                                    System.out.print(name + " INVALID VARNAME DECLARATION \n");
+                                }
+                            } else {
+                                System.out.print(name + " VALID VARNAME DECLARATION cuz length is 1" + "\n");
+                            }
+
+                        }
+                    }
+
+                }
+            } else {
+                System.out.println("INVALID VARIABLE DEFINITION");
+            }
+
+//            System.out.println(t);
+
+        } else if(testcase.contains("(")){
+            System.out.println("function declaration");
+        } else {
+            String dtype = testcase.substring(0, testcase.indexOf(" "));
+            if(dataTypes.contains(dtype)){
+                String t = testcase.substring(testcase.indexOf(" ") + 1).trim();
+                if(t.contains(",,")){
+                    System.out.println("INVALID VARIABLE DECLARATION");
+                    return;
+                }
+                StringTokenizer st = new StringTokenizer(t, ",");
+                List<String> var = new ArrayList<>();
+                while (st.hasMoreTokens()) {
+                    String s = st.nextToken().trim();
+                    if(var.contains(s)){
+                        System.out.println("INVALID VARIABLE DECLARATION");
+                        return;
+                    }
+                    var.add(s);
+                    if(!validVarName(s)){
+                        System.out.println("INVALID VARIABLE DECLARATION");
+                        return;
+                    }
+                }
+                System.out.println("VALID VARIABLE DECLARATION");
+            } else {
+                System.out.println("INVALID VARIABLE DECLARATION");
+            }
+        }
+    }
+    static boolean validVarName(String var){
+        if(var.isEmpty()){
+            return false;
+        }
+        if(isLetter(var.charAt(0)) || var.charAt(0) == '_'){
+            for (int i = 1; i < var.length(); i++){
+                char x = var.charAt(i);
+                if(!isLetter(x) && !isNum(x)){
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    static boolean isNum(char x){
+        if(x >= '0' && x <= '9') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    static boolean isLetter(char x){
+        if((x >= 'a' && x <= 'z') || (x >= 'A' && x <= 'Z')){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public static void main(String args[]) {
 //        String fName = askUserInput();
         String fName = "others/mpa1.in";
