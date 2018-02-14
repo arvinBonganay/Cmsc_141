@@ -1,7 +1,6 @@
 import java.io.*;
 import java.util.*;
 
-// wowowowowo
 public class mp1 {
     static List<String> dataTypes = new ArrayList<>(Arrays.asList("int", "float", "double", "char"));
 
