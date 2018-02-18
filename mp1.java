@@ -1,13 +1,8 @@
 import java.io.*;
 import java.util.*;
 
-
 public class mp1 {
     static List<String> dataTypes = new ArrayList<>(Arrays.asList("int", "float", "double", "char"));
-
-
-
-
 
     static String askUserInput() {
         System.out.print("Enter Input File:");
@@ -203,8 +198,12 @@ public class mp1 {
 //        String fName = askUserInput();
         String fName = "others/mpa1.in";
         readFile(fName);
-        int qw = 5 3;
+
+        int qw = 53;
         System.out.println(qw);
-        
+
+
+
+
     }
 }
