@@ -72,7 +72,20 @@ public class mp1 {
                 while(tokens.hasMoreTokens()){
                     name = tokens.nextToken().trim();
                     if(name.contains("=")){
-                        System.out.print(name.trim() + " has equals" + "\n");
+                        String value = name.substring(name.indexOf('=')+ 1).trim();
+                        if(isInteger(value) && dtype1.equals(dataTypes.get(0))){
+                            System.out.println(value + " is a valid Integer value");
+                        }
+                        if (isFloat(value) && dtype1.equals(dataTypes.get(1))) {
+                            System.out.println(value + " is a valid float value");
+                        }
+                        if (isDouble(value) && dtype1.equals(dataTypes.get(2))) {
+                            System.out.println(value + " is a valid Double value");
+                        }
+                        if (isChar(value) && dtype1.equals(dataTypes.get(3))) {
+                            System.out.println(value + " is a valid char value");
+                        }
+                        System.out.println(dtype1 + " is NOT VALID");
                     } else {
                         if ((!isNum(name.charAt(0)) || isLetter(name.charAt(0))) || name.charAt(0) == '_') {
                             if(name.length() != 1){
@@ -93,7 +106,6 @@ public class mp1 {
                 System.out.println("INVALID VARIABLE DEFINITION");
             }
 
-//            System.out.println(t);
 
         } else if(testcase.contains("(")){
             System.out.println("function declaration");
@@ -124,6 +136,36 @@ public class mp1 {
                 System.out.println("INVALID VARIABLE DECLARATION");
             }
         }
+    }
+    static boolean isInteger(String n){
+        try{
+            int x = Integer.parseInt(n);
+            return true;
+        } catch(Exception e){
+            return false;
+        }
+
+    }
+    static boolean isFloat(String n){
+        try{
+            float x = Float.parseFloat(n);
+            return true;
+        } catch(Exception e){
+            return false;
+        }
+
+    }
+    static boolean isDouble(String n){
+        try{
+            double x = Double.parseDouble(n);
+            return true;
+        } catch(Exception e){
+            return false;
+        }
+
+    }
+    static boolean isChar(String n){
+        return n.length() == 3 && n.toCharArray()[0] == '\'' && n.toCharArray()[2] == '\'';
     }
     static boolean validVarName(String var){
         if(var.isEmpty()){
@@ -161,7 +203,8 @@ public class mp1 {
 //        String fName = askUserInput();
         String fName = "others/mpa1.in";
         readFile(fName);
-        
+        int qw = 5 3;
+        System.out.println(qw);
         
     }
 }
