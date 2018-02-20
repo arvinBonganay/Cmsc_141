@@ -16,37 +16,70 @@ public class mp1 {
             BufferedReader br = new BufferedReader(fr);){
             int n = Integer.parseInt( br.readLine());
             System.out.println("This is the number of testcases:" + n);
-            String testcase = "";
-            boolean isFunc = false;
+            ArrayList<String> lines = new ArrayList<>();
             while((line = br.readLine())!= null){
-                int start = 0;
-                for (int i = 0; i < line.length(); i++){
-                    char c = line.charAt(i);
-                    if(c == ';' && !isFunc){
-                        testcase += line.substring(start, i);
-                        start = i + 1;
-//                        System.out.println(testcase.trim());
-                        validate(testcase.trim());
-                        testcase = "";
-                    } else if(c == '{'){
-                        isFunc = true;
-                        testcase += line.substring(start, i + 1);
-                        start = i + 1;
-                    } else if (c == '}'){
-                        isFunc = false;
-                        testcase += line.substring(start, i + 1);
-//                        System.out.println(testcase.trim());
-                        validate(testcase.trim());
-                        start = i + 1;
-                        testcase = "";
-                    }
-                }
-                testcase += line.substring(start) + " ";
+                lines.add(line);
             }
+            getTestcase(lines);
             br.close();
         }catch (Exception e){
             System.out.println(e.getMessage());
             System.exit(0);
+        }
+    }
+
+    static void getTestcase(ArrayList<String> list){
+        String testcase = "";
+        boolean isFunc = false;
+        for(String line: list){
+            int start = 0;
+            for (int i = 0; i < line.length(); i++){
+                char c = line.charAt(i);
+                if(c == ';' && !isFunc){
+                    testcase += line.substring(start, i);
+                    start = i + 1;
+                    determineType(testcase.trim());
+//                    validate(testcase.trim());
+                    testcase = "";
+                } else if(c == '{'){
+                    isFunc = true;
+                    testcase += line.substring(start, i + 1);
+                    start = i + 1;
+                } else if (c == '}'){
+                    isFunc = false;
+                    testcase += line.substring(start, i + 1);
+                    determineType(testcase.trim());
+//                    validate(testcase.trim());
+                    start = i + 1;
+                    testcase = "";
+                }
+            }
+            testcase += line.substring(start) + " ";
+        }
+    }
+
+    static void determineType(String testcase){
+        String result = "";
+        if (testcase.contains("{") && testcase.contains("=")){
+            if (testcase.indexOf("{") < testcase.indexOf("=")){
+                System.out.println("function definition");
+            } else {
+                System.out.println("variable definition");
+            }
+        } else if (testcase.contains("{")){
+            System.out.println("function definition");
+        } else if (testcase.contains("=")){
+            System.out.println("variable definition");
+        } else if (testcase.contains("(")){
+            System.out.println("function declaration");
+        } else {
+            result = "VARIABLE DECLARATION";
+            if (validVarDeclaration(testcase)){
+                result = "VALID " + result;
+            } else {
+                result = "INVALID " + result;
+            }
+            System.out.println(result);
         }
     }
 
@@ -109,29 +142,88 @@ public class mp1 {
             if(dataTypes.contains(dtype)){
                 String t = testcase.substring(testcase.indexOf(" ") + 1).trim();
                 if(t.contains(",,")){
-                    System.out.println("INVALID VARIABLE DECLARATION");
+                    System.out.println("aINVALID VARIABLE DECLARATION");
                     return;
                 }
                 StringTokenizer st = new StringTokenizer(t, ",");
-                List<String> var = new ArrayList<>();
+                List<String> declaredVar = new ArrayList<>();
                 while (st.hasMoreTokens()) {
                     String s = st.nextToken().trim();
-                    if(var.contains(s)){
-                        System.out.println("INVALID VARIABLE DECLARATION");
+                    if(declaredVar.contains(s)){
+                        System.out.println("bINVALID VARIABLE DECLARATION");
                         return;
                     }
-                    var.add(s);
+                    declaredVar.add(s);
                     if(!validVarName(s)){
-                        System.out.println("INVALID VARIABLE DECLARATION");
+                        System.out.println("cINVALID VARIABLE DECLARATION");
                         return;
                     }
                 }
                 System.out.println("VALID VARIABLE DECLARATION");
             } else {
-                System.out.println("INVALID VARIABLE DECLARATION");
+                System.out.println("dINVALID VARIABLE DECLARATION");
             }
         }
     }
+    static boolean validVarDeclaration(String test){
+        String dType = test.substring(0, test.indexOf(" "));
+        if(dataTypes.contains(dType)){ // check if valid data type
+            String t = test.substring(test.indexOf(" ")).trim();
+            if(t.contains(",,")){
+                return false;
+            }
+            StringTokenizer st = new StringTokenizer(t, ","); // gets all the variable name if given is int x, b,c
+            List<String> declaredVar = new ArrayList<>();
+            while (st.hasMoreTokens()) {
+                String s = st.nextToken().trim();
+                if(declaredVar.contains(s)){
+                    return false;
+                }
+                declaredVar.add(s);
+                if(!validVarName(s)){
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    // checks if the variable name is valid
+    static boolean validVarName(String var){
+        // checks if the variable is an empty string
+        if(var.isEmpty()){
+            return false;
+        }
+        ArrayList<String> reserved = new ArrayList<>(Arrays.asList("auto", "break", "case", "char",  "const", "continue", "default", "do",
+                "int", "long", "register", "return", "short", "signed", "sizeof", "static",
+                "struct", "switch", "typedef", "union", "unsigned", "void", "volatile", "while",
+                "double", "else", "enum", "extern", "float", "for", "goto", "if"));
+
+        //checks if the variable name used is a reserved keyword
+        for (String r: reserved) {
+            if(var.equals(r)){
+                return false;
+            }
+        }
+
+        //checks every character of the variable name if its valid: (letter or _) + (letter or number or _)
+        if(isLetter(var.charAt(0)) || var.charAt(0) == '_'){
+            for (int i = 1; i < var.length(); i++){
+                char x = var.charAt(i);
+                if(!isLetter(x) && !isNum(x) &&  x != '_'){
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
     static boolean isInteger(String n){
         try{
             int x = Integer.parseInt(n);
@@ -162,22 +254,6 @@ public class mp1 {
     static boolean isChar(String n){
         return n.length() == 3 && n.toCharArray()[0] == '\'' && n.toCharArray()[2] == '\'';
     }
-    static boolean validVarName(String var){
-        if(var.isEmpty()){
-            return false;
-        }
-        if(isLetter(var.charAt(0)) || var.charAt(0) == '_'){
-            for (int i = 1; i < var.length(); i++){
-                char x = var.charAt(i);
-                if(!isLetter(x) && !isNum(x)){
-                    return false;
-                }
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     static boolean isNum(char x){
         if(x >= '0' && x <= '9') {
@@ -198,12 +274,5 @@ public class mp1 {
 //        String fName = askUserInput();
         String fName = "others/mpa1.in";
         readFile(fName);
-
-        int qw = 53;
-        System.out.println(qw);
-
-
-
-
     }
 }
